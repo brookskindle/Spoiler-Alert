@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>{{ content }}</title>
-        <style type="text/css">
-            body {background-color: #232428;}
-            div {color: #ffffff;}
-        </style>
-    </head>
-    <body>
-        <div align="center">{{ content }}</div>
-    </body>
-</html>
+{% extends "layout.html" %}
+{% block content %}
+  <h3> This is the start of my child template</h3>
+  <br>
+  <p>My string: {{my_string}}</p>
+  <p>Value from the list: {{my_list[3]}}</p>
+  <p>Loop through the list:</p>
+  <ul>
+    {% for n in my_list %}
+    <li>{{n}}</li>
+    {% endfor %}
+  </ul>
+  <h3> This is the end of my child template</h3>
+{% endblock %}

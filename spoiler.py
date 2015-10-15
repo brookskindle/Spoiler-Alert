@@ -18,8 +18,13 @@ spoilers = [
             "becoming The Winter Soldier.",
 ]
 
+def pseudo_index():
+    return render_template('index.html', my_string="Wheeeee!",
+            my_list=[0,1,2,3,4,5])
+
 @app.route("/")
 def index():
+    return pseudo_index()
     i = random.randrange(len(spoilers))
     spoiler = spoilers[i]
     return render_template("index.html", content=spoiler)
