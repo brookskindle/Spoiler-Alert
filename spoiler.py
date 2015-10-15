@@ -1,12 +1,22 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Specify encoding so we may use unicode within our source code.
 
 """
 spoiler.py - the program entry point
 """
 
+# System imports.
 import random
 
-from flask import Flask, render_template
+# Third party imports.
+from flask import Flask
+from flask import render_template  # For html template rendering.
+from flask import request  # For obtaining POST information (?)
+from flask import redirect  # To redirect to another page
+
+# Local imports.
+
 app = Flask(__name__)
 
 spoilers = [
@@ -18,16 +28,23 @@ spoilers = [
             "becoming The Winter Soldier.",
 ]
 
-def pseudo_index():
-    return render_template('index.html', my_string="Wheeeee!",
-            my_list=[0,1,2,3,4,5])
-
 @app.route("/")
 def index():
-    return pseudo_index()
     i = random.randrange(len(spoilers))
     spoiler = spoilers[i]
     return render_template("index.html", content=spoiler)
+
+@app.route("/submit/")
+def submit():
+    return render_template("submit.html")
+
+@app.route("/submit/", methods=["POST"])
+def submit_post():
+    """Adds a submitted spoiler."""
+    spoiler = request.form['text']
+    spoilers.append(spoiler)
+    return redirect("/", code=302)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
