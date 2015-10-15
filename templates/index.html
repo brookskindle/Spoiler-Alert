@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>{{ content }}</title>
-        <style type="text/css">
-            body {background-color: #232428;}
-            div {color: #ffffff;}
-            a:link {color: #4DDB4D}
-            a:visited {color: #0099FF}
-        </style>
-    </head>
-    <body>
-        <div align="center">{{ content }}</div>
-    </body>
-    <body>
-        <div align="center">
-            <a href="/submit">Submit your own!</a>
-        </div>
-    </body>
-</html>
+<!-- Inherit from layout -->
+{% extends "layout.html" %}
+{% block content %}
+<div align="center">{{ content }}</div>
+    <div align="center">
+        <a href="/submit">Submit your own!</a>
+    </div>
+{% endblock %}

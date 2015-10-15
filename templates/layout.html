@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!-- Parent template to apply color and layout to all other pages.  -->
+<html>
+    <head>
+        <title>{{ content }}</title>
+        <style type="text/css">
+            body {background-color: #232428;}
+            div {color: #ffffff;}
+            a:link {color: #4DDB4D}
+            a:visited {color: #0099FF}
+        </style>
+    </head>
+    <body>
+        <!-- This is where subclass content will go. -->
+        {% block content %} {% endblock %}
+    </body>
+</html>
