@@ -16,8 +16,14 @@ from flask import request  # For obtaining POST information (?)
 from flask import redirect  # To redirect to another page
 
 # Local imports.
+from spoiler.database import db_session
 
 app = Flask(__name__)
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    """Remove database session at end of request/when app is shut down."""
+    db_session.remove()
 
 spoilers = [
         "Nothing is inside the jar of dirt.",
