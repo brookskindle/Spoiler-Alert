@@ -1,12 +1,14 @@
 <!-- Inherit from layout.html -->
 {% extends "layout.html" %}
 {% block content %}
-<div>
-What is your spoiler?
-Think of all the lives you'll ruin!
-</div
-<form action="." method="POST">
+<div align="center">
+    <p>What is your spoiler?</p>
+    <p>Think of all the lives you'll ruin!</p>
+</div>
+<div align="center">
+<form action="." method="POST", align="center">
     <input type="text" name="text">
     <input type="submit" name="spoiler-submit" value="Submit">
+</div>
 </form>
 {% endblock %}
