@@ -4,7 +4,7 @@ database.
 """
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_seccion, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine("sqlite:////tmp/test.db", convert_unicode=True)
@@ -21,5 +21,5 @@ def init_db():
     # Import modules that might define models so that they get registered
     # properly on the metadata. Otherwise you will have to import them first
     # before calling init_db()
-    import spoiler.models
+    from models import models
     Base.metadata.create_all(bind=engine)

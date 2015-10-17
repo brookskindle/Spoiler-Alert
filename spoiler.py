@@ -16,7 +16,8 @@ from flask import request  # For obtaining POST information (?)
 from flask import redirect  # To redirect to another page
 
 # Local imports.
-from spoiler.database import db_session
+from database import db_session, init_db
+from models.models import Post
 
 app = Flask(__name__)
 
@@ -25,19 +26,16 @@ def shutdown_session(exception=None):
     """Remove database session at end of request/when app is shut down."""
     db_session.remove()
 
-spoilers = [
-        "Nothing is inside the jar of dirt.",
-        "Jack dies.",
-        "Hermione ends up with Ron.",
-        "Ned Stark dies.",
-        "Captain America's friend, Bucky, doesn't die but instead ends up "
-            "becoming The Winter Soldier.",
-]
-
 @app.route("/")
 def index():
-    i = random.randrange(len(spoilers))
-    spoiler = spoilers[i]
+    default_post = "We're all spoiled out. Give us a hand and tell us yours!"
+    # TODO: querying the entire post table is inefficient and will not scale. A
+    # better solution for this needs to be found when relevant.
+    posts = Post.query.all()
+    spoiler = default_post
+    if posts:  # At least one spoiler post
+        i = random.randrange(len(posts))
+        spoiler = posts[i].content
     return render_template("index.html", content=spoiler)
 
 @app.route("/submit/")
@@ -48,9 +46,13 @@ def submit():
 def submit_post():
     """Adds a submitted spoiler."""
     spoiler = request.form['text']
-    spoilers.append(spoiler)
+    # TODO: Does this need to go through any user sanitization?
+    post = Post(spoiler)
+    db_session.add(post)
+    db_session.commit()
     return redirect("/", code=302)
 
 
 if __name__ == "__main__":
+    init_db()
     app.run(debug=True)
