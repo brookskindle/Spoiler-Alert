@@ -3,9 +3,9 @@ Contains functions and variables for initializing and connecting to the
 database.
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from flask.ext.sqlalchemy import create_engine
+from flask.ext.sqlalchemy.orm import scoped_session, sessionmaker
+from flask.ext.sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine("sqlite:////tmp/test.db", convert_unicode=True)
 

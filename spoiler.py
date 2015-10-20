@@ -52,6 +52,17 @@ def submit_post():
     db_session.commit()
     return redirect("/", code=302)
 
+@app.route("/login/", methods=["GET","POST"])
+def login():
+    if request.method == "GET":
+        pass
+    # Else "POST"
+    pass
+
+@app.route("/logout/")
+def logout():
+    """Logs a user out, if he was logged in."""
+    pass
 
 if __name__ == "__main__":
     init_db()
