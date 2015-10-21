@@ -16,8 +16,8 @@ from flask import request  # For obtaining POST information (?)
 from flask import redirect  # To redirect to another page
 
 # Local imports.
-from database import db_session, init_db
-from models.models import Post
+from database import db
+from models.models import Post, User
 
 app = Flask(__name__)
 
@@ -52,12 +52,25 @@ def submit_post():
     db_session.commit()
     return redirect("/", code=302)
 
+@app.route("/register/", methods=["GET","POST"])
+def register():
+    if request.method == "GET":
+        return render_template("register.html")
+    # Else "POST"
+    user = User(request.form["username"], request.form["password"])
+    # TODO: do we need to check for username validity?
+    db.session.add(user)
+    db.session.commit()
+    falsh("Successfully registered.")
+    return redirect(url_for("login"))
+
 @app.route("/login/", methods=["GET","POST"])
 def login():
     if request.method == "GET":
-        pass
+        return render_template("login.html")
     # Else "POST"
-    pass
+    # TODO: do we need to check login credentials?
+    return redirect(url_for("index"))
 
 @app.route("/logout/")
 def logout():

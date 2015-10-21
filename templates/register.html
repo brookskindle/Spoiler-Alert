@@ -1,0 +1,18 @@
+<!-- Inherit from layout.html -->
+{% extends "layout.html" %}
+{% block content %}
+<div align="center">
+    <p>Create a username and password</p>
+</div>
+<div align="center">
+<form action="." method="POST", align="center">
+    <input type="text" name="username" placeholder="Username" value="{{ request.form.username }}" required>
+    <input type="password" name="password" placeholder="Password" value="{{ request.form.password }}" required>
+</div>
+<div class="control-group">
+    <div class="controls">
+        <button type="submit" class="btn btn-success">Signup</button>
+    </div>
+</div>
+</form>
+{% endblock %}

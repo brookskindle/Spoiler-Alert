@@ -4,8 +4,11 @@ database.
 """
 
 from flask.ext.sqlalchemy import create_engine
+from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.sqlalchemy.orm import scoped_session, sessionmaker
 from flask.ext.sqlalchemy.ext.declarative import declarative_base
+
+db = SQLAlchemy()
 
 engine = create_engine("sqlite:////tmp/test.db", convert_unicode=True)
 
