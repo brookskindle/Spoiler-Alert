@@ -36,9 +36,12 @@ class Post(db.Model):
     __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(160), unique=False)
+    userid = db.Column(db.Integer, db.ForeignKey("user.id"))
 
-    def __init__(self, content=None):
+    def __init__(self, userid, content=None):
         self.content = content
+        # TODO: validate user id?
+        self.userid = userid
 
     def __repr__(self):
         return "id={0}, content={1}".format(self.id, self.content)
