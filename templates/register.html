@@ -8,11 +8,7 @@
 <form action="." method="POST", align="center">
     <input type="text" name="username" placeholder="Username" value="{{ request.form.username }}" required>
     <input type="password" name="password" placeholder="Password" value="{{ request.form.password }}" required>
-</div>
-<div class="control-group">
-    <div class="controls">
-        <button type="submit" class="btn btn-success">Signup</button>
-    </div>
+    <button type="submit" class="btn btn-success">Signup</button>
 </div>
 </form>
 {% endblock %}

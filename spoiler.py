@@ -23,6 +23,7 @@ from flask.ext.login import LoginManager
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/test.db"
+app.secret_key = "THIS ISN'T A VERY SECURE SECRET KEY!"
 db = SQLAlchemy(app)  # Create the db
 login_manager = LoginManager()
 login_manager.init_app(app)  # Create the login_manager
@@ -155,7 +156,9 @@ def login():
 @app.route("/logout/")
 def logout():
     """Logs a user out, if he was logged in."""
-    return "TODO"
+    # TODO: Log a user out.
+    flash("TODO: Actually perform a log out.")
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     init_db()

@@ -1,9 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Sign in to be spoiled!</h2>
-<form action="." method="POST", align="center">
-    <input type="text" name="username" placeholder="Enter username" required>
-    <input type="password" name="password" placeholder="Enter password" required>
-    <input type="submit" name="Log In" value="Submit">
+<div align="center">
+    <p>Sign in to be spoiled!</p>
+    <form action="." method="POST">
+        <input type="text" name="username" placeholder="Enter username" required>
+        <input type="password" name="password" placeholder="Enter password" required>
+        <input type="submit" name="Log In" value="Submit">
+    </form>
 </div>
 {% endblock %}
