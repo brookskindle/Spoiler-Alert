@@ -17,7 +17,7 @@ from flask import render_template  # For html template rendering.
 from flask import request  # For obtaining POST information (?)
 from flask import url_for  # Gets the url for a given name
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager
+from flask.ext.login import LoginManager, login_required, login_user
 
 # Local imports.
 
@@ -115,14 +115,13 @@ def index():
     return render_template("index.html", content=spoiler)
 
 
-@app.route("/submit/")
+@app.route("/submit/", methods=["GET", "POST"])
+@login_required
 def submit():
-    return render_template("submit.html")
-
-
-@app.route("/submit/", methods=["POST"])
-def submit_post():
     """Adds a submitted spoiler."""
+    if request.method == "GET":
+        return render_template("submit.html")
+    # Else POST
     spoiler = request.form['text']
     # TODO: Does this need to go through any user sanitization?
     post = Post(spoiler)
@@ -149,8 +148,17 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     # Else "POST"
-    # TODO: do we need to check login credentials?
-    return redirect(url_for("index"))
+    username = request.form["username"]
+    password = request.form["password"]
+    # TODO: use encryption to handle user passwords
+    registered_user = User.query.filter_by(username=username, password=password).first()
+    if registered_user is None:  # Invalid username/password combo
+        flash("Error, incorrect username and/or password")
+        return redirect(url_for("login"))
+    # Else login successful
+    login_user(registered_user)
+    flash("Login successful!")
+    return redirect(url_for("submit"))
 
 
 @app.route("/logout/")
