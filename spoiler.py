@@ -18,6 +18,7 @@ from flask import request  # For obtaining POST information (?)
 from flask import url_for  # Gets the url for a given name
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager, login_required, login_user
+from flask.ext.login import current_user, logout_user
 
 # Local imports.
 
@@ -70,9 +71,8 @@ class Post(db.Model):
     content = db.Column(db.String(160), unique=False)
     userid = db.Column(db.Integer, db.ForeignKey("user.id"))
 
-    def __init__(self, userid, content=None):
+    def __init__(self, userid, content):
         self.content = content
-        # TODO: validate user id?
         self.userid = userid
 
     def __repr__(self):
@@ -122,9 +122,9 @@ def submit():
     if request.method == "GET":
         return render_template("submit.html")
     # Else POST
+    id = current_user.get_id()
     spoiler = request.form['text']
-    # TODO: Does this need to go through any user sanitization?
-    post = Post(spoiler)
+    post = Post(id, spoiler)
     db.session.add(post)
     db.session.commit()
     return redirect("/", code=302)
@@ -135,8 +135,13 @@ def register():
     if request.method == "GET":
         return render_template("register.html")
     # Else "POST"
-    user = User(request.form["username"], request.form["password"])
-    # TODO: do we need to check for username validity?
+    username = request.form["username"]
+    password = request.form["password"]
+    user = User.query.filter_by(username=username).first()
+    if user is not None:  # User already exists
+        return render_template("register.html")
+    # User doesn't exist, add him!
+    user = User(username, password)
     db.session.add(user)
     db.session.commit()
     flash("Successfully registered.")
@@ -150,22 +155,31 @@ def login():
     # Else "POST"
     username = request.form["username"]
     password = request.form["password"]
-    # TODO: use encryption to handle user passwords
-    registered_user = User.query.filter_by(username=username, password=password).first()
+    # TODO: encrypt user passwords
+    registered_user = User.query.filter_by(username=username,
+                                           password=password).first()
     if registered_user is None:  # Invalid username/password combo
         flash("Error, incorrect username and/or password")
         return redirect(url_for("login"))
     # Else login successful
+    registered_user.authenticated = True
+    db.session.add(registered_user)
+    db.session.commit()
     login_user(registered_user)
     flash("Login successful!")
     return redirect(url_for("submit"))
 
 
-@app.route("/logout/")
+@app.route("/logout/", methods=["GET"])
+@login_required
 def logout():
     """Logs a user out, if he was logged in."""
-    # TODO: Log a user out.
-    flash("TODO: Actually perform a log out.")
+    user = current_user
+    user.authenticated = False
+    db.session.add(user)
+    db.session.commit()
+    logout_user()
+    flash("You have been successfully logged out!")
     return redirect(url_for("index"))
 
 if __name__ == "__main__":

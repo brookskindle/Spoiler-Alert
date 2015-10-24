@@ -12,6 +12,12 @@
     </head>
     <body>
         <div align="center">
+            {% if current_user.is_authenticated %}
+                Logged as {{ current_user.username }}
+            {% else %}
+                Not logged in
+            {% endif %}
+            ||
             <a href="/">Homepage</a>
             ||
             <a href="/submit/">Submit your own!</a>
