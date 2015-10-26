@@ -19,6 +19,8 @@ from flask import url_for  # Gets the url for a given name
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager, login_required, login_user
 from flask.ext.login import current_user, logout_user
+from flask.ext.login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Local imports.
 
@@ -34,34 +36,25 @@ login_manager.init_app(app)  # Create the login_manager
 """-------------------------------------------------------------------------"""
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     # Since we're using Flask-Login, User must be created a specific way:
     # See: https://flask-login.readthedocs.org/en/latest/#your-user-class
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(160), unique=True)
-    password = db.Column(db.String(64), unique=False)
-    authenticated = db.Column(db.Boolean, default=False)
+    username = db.Column(db.String(64), unique=True)
+    password_hash = db.Column(db.String(128), unique=False)
     posts = db.relationship("Post", backref="user", lazy="dynamic")
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+    @property
+    def password(self):
+        raise AttributeError("password is not a readable attribute")
 
-    def __repr__(self):
-        return "<user: {}>".format(self.username)
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
 
-    def is_authenticated(self):
-        return self.authenticated
-
-    def is_active(self):
-        return True  # All users are active
-
-    def is_anonymous(self):
-        return False  # Disable anonymous users
-
-    def get_id(self):
-        return self.id
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Post(db.Model):
@@ -69,11 +62,11 @@ class Post(db.Model):
     __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(160), unique=False)
-    userid = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
-    def __init__(self, userid, content):
+    def __init__(self, user_id, content):
         self.content = content
-        self.userid = userid
+        self.user_id = user_id
 
     def __repr__(self):
         return "id={0}, content={1}".format(self.id, self.content)
@@ -89,7 +82,7 @@ def user_loader(user_id):
     """
     Return the User object from a given user_id
     """
-    return User.query.get(user_id)
+    return User.query.get(int(user_id))
 
 """-------------------------------------------------------------------------"""
 """---------------------------------ROUTES----------------------------------"""
@@ -122,9 +115,9 @@ def submit():
     if request.method == "GET":
         return render_template("submit.html")
     # Else POST
-    id = current_user.get_id()
+    user_id = current_user.get_id()
     spoiler = request.form['text']
-    post = Post(id, spoiler)
+    post = Post(user_id, spoiler)
     db.session.add(post)
     db.session.commit()
     return redirect("/", code=302)
@@ -132,6 +125,7 @@ def submit():
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
+    # TODO: implement https for a production server
     if request.method == "GET":
         return render_template("register.html")
     # Else "POST"
@@ -141,7 +135,9 @@ def register():
     if user is not None:  # User already exists
         return render_template("register.html")
     # User doesn't exist, add him!
-    user = User(username, password)
+    user = User()
+    user.username = username
+    user.password = password
     db.session.add(user)
     db.session.commit()
     flash("Successfully registered.")
@@ -150,34 +146,24 @@ def register():
 
 @app.route("/login/", methods=["GET", "POST"])
 def login():
+    # TODO: implement https for a production server
     if request.method == "GET":
         return render_template("login.html")
     # Else "POST"
     username = request.form["username"]
     password = request.form["password"]
-    # TODO: encrypt user passwords
-    registered_user = User.query.filter_by(username=username,
-                                           password=password).first()
-    if registered_user is None:  # Invalid username/password combo
-        flash("Error, incorrect username and/or password")
-        return redirect(url_for("login"))
-    # Else login successful
-    registered_user.authenticated = True
-    db.session.add(registered_user)
-    db.session.commit()
-    login_user(registered_user)
-    flash("Login successful!")
-    return redirect(url_for("submit"))
+    user = User.query.filter_by(username=username).first()
+    if user is not None and user.verify_password(password):
+        # Valid username and password
+        login_user(user)
+        return redirect(url_for("submit"))
+    flash("Error, incorrect username and/or password")
+    return redirect(url_for("login"))
 
 
 @app.route("/logout/", methods=["GET"])
 @login_required
 def logout():
-    """Logs a user out, if he was logged in."""
-    user = current_user
-    user.authenticated = False
-    db.session.add(user)
-    db.session.commit()
     logout_user()
     flash("You have been successfully logged out!")
     return redirect(url_for("index"))
