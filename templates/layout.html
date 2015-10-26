@@ -10,25 +10,33 @@
             a:visited {color: #0099FF}
         </style>
     </head>
+
     <body>
         <div align="center">
-            {% if current_user.is_authenticated %}
-                Logged in as {{ current_user.username }}
-            {% else %}
-                Not logged in
-            {% endif %}
-            ||
             <a href="/">Homepage</a>
             ||
             <a href="/submit/">Submit your own!</a>
             ||
-            <a href="/register/">Register</a>
-            ||
-            <a href="/login/">Login</a>
-            ||
-            <a href="/logout/">Logout</a>
+            {% if current_user.is_authenticated %}
+            <font color="#4DDB4D">Logged in as {{ current_user.username }} <a href="/logout/">(logout)</a></font>
+            {% else %}
+                <a href="/register/">Register</a>
+                ||
+                <a href="/login/">Login</a>
+            {% endif %}
         </div>
         <!-- This is where subclass content will go. -->
-        {% block content %} {% endblock %}
+        {% block content %}
+        {% endblock %}
+        <!-- Allow for flashed messages to appear. -->
+        <p></p>
+        <div align="center" class="container">
+            {% for message in get_flashed_messages() %}
+            <div data-alert class="alert-box alert round">
+                <a href="#" class="close">&times;</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
     </body>
 </html>
