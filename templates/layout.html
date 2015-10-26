@@ -18,7 +18,7 @@
             <a href="/submit/">Submit your own!</a>
             ||
             {% if current_user.is_authenticated %}
-            <font color="#4DDB4D">Logged in as {{ current_user.username }} <a href="/logout/">(logout)</a></font>
+            <font color="#4DDB4D">Signed in as {{ current_user.username }} <a href="/logout/">(logout)</a></font>
             {% else %}
                 <a href="/register/">Register</a>
                 ||
