@@ -135,6 +135,7 @@ def register():
     password = request.form["password"]
     user = User.query.filter_by(username=username).first()
     if user is not None:  # User already exists
+        flash("{} is already in use.".format(username))
         return render_template("register.html")
     # User doesn't exist, add him!
     user = User()
