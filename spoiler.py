@@ -16,10 +16,11 @@ from flask import redirect  # To redirect to another page
 from flask import render_template  # For html template rendering.
 from flask import request  # For obtaining POST information (?)
 from flask import url_for  # Gets the url for a given name
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.bootstrap import Bootstrap  # Pretty user interface
 from flask.ext.login import LoginManager, login_required, login_user
-from flask.ext.login import current_user, logout_user
 from flask.ext.login import UserMixin
+from flask.ext.login import current_user, logout_user
+from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Local imports.
@@ -30,6 +31,7 @@ app.secret_key = "THIS ISN'T A VERY SECURE SECRET KEY!"
 db = SQLAlchemy(app)  # Create the db
 login_manager = LoginManager()
 login_manager.init_app(app)  # Create the login_manager
+bootstrap = Bootstrap(app)
 
 """-------------------------------------------------------------------------"""
 """---------------------------------MODELS----------------------------------"""

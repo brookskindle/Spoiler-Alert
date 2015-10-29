@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <!-- Parent template to apply color and layout to all other pages.  -->
 <html>
-    <head>
-        <title>{{ content }}</title>
-        <style type="text/css">
-            body {background-color: #232428;}
-            div {color: #ffffff;}
-            a:link {color: #4DDB4D}
-            a:visited {color: #0099FF}
-        </style>
-    </head>
+    <!-- Inherit from Bootstrap's base -->
+    {% extends "bootstrap/base.html" %}
 
-    <body>
-        <div align="center">
-            <a href="/">Homepage</a>
-            ||
-            <a href="/submit/">Submit your own!</a>
-            ||
-            {% if current_user.is_authenticated %}
-            <font color="#4DDB4D">Signed in as {{ current_user.username }} <a href="/logout/">(logout)</a></font>
-            {% else %}
-                <a href="/register/">Register</a>
-                ||
-                <a href="/login/">Login</a>
-            {% endif %}
-        </div>
-        <!-- This is where subclass content will go. -->
-        {% block content %}
-        {% endblock %}
-        <!-- Allow for flashed messages to appear. -->
-        <p></p>
-        <div align="center" class="container">
-            {% for message in get_flashed_messages() %}
-            <div data-alert class="alert-box alert round">
-                <a href="#" class="close">&times;</a>
-                {{ message }}
+    <!-- Override the navbar that bootstrap provides -->
+    {% block navbar %}
+        <div class="navbar navbar-inverse" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle"
+                        data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href={{url_for("index")}}>Spoiler</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href={{url_for("index")}}>Home</a>
+                        <li><a href={{url_for("submit")}}>Submit</a>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if current_user.is_authenticated %}
+                            <li><a href={{url_for("logout")}}>Log Out</a>
+                        {% else %}
+                            <li><a href={{url_for("register")}}>Register</a>
+                            <li><a href={{url_for("login")}}>Log In</a>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
-            {% endfor %}
         </div>
-    </body>
+    {% endblock %}
+
+    {% block content %}
+        <div class="container">
+            {% block page_content %}{% endblock %}
+        </div>
+    {% endblock %}
 </html>
