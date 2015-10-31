@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
-<div align="center">
-    <p>Sign in to be spoiled!</p>
-    <form action="." method="POST">
-        <input type="text" name="username" placeholder="Enter username" required>
-        <input type="password" name="password" placeholder="Enter password" required>
-        <button type="submit" class="btn btn-success">Log in</button>
-    </form>
-</div>
+    <!--
+    Render a WTForms form. Note that this means you must pass in a form when
+    rendering
+    -->
+    {{ wtf.quick_form(form) }}
 {% endblock %}

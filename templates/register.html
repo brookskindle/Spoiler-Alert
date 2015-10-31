@@ -1,14 +1,6 @@
-<!-- Inherit from layout.html -->
+<!-- Inherit from our base template -->
 {% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
-<div align="center">
-    <p>Create a username and password</p>
-</div>
-<div align="center">
-<form action="." method="POST", align="center">
-    <input type="text" name="username" placeholder="Username" value="{{ request.form.username }}" required>
-    <input type="password" name="password" placeholder="Password" value="{{ request.form.password }}" required>
-    <button type="submit" class="btn btn-success">Sign up</button>
-</div>
-</form>
+    {{ wtf.quick_form(form) }}
 {% endblock %}
