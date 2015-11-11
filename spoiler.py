@@ -22,6 +22,7 @@ from flask.ext.login import UserMixin
 from flask.ext.login import current_user, logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
+from flask.ext.script import Manager
 from wtforms import StringField, TextField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -35,6 +36,7 @@ db = SQLAlchemy(app)  # Create the db
 login_manager = LoginManager()
 login_manager.init_app(app)  # Create the login_manager
 bootstrap = Bootstrap(app)
+manager = Manager(app)
 
 # --------------------------------------------------------------------------
 # ----------------------------------MODELS----------------------------------
@@ -211,4 +213,4 @@ def logout():
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    manager.run()
