@@ -23,6 +23,7 @@ from flask.ext.login import current_user, logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 from flask.ext.script import Manager, Shell
+from flask.ext.migrate import Migrate, MigrateCommand
 from wtforms import StringField, TextField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -37,6 +38,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)  # Create the login_manager
 bootstrap = Bootstrap(app)
 manager = Manager(app)
+migrate = Migrate(app, db)
 
 # --------------------------------------------------------------------------
 # ----------------------------------MODELS----------------------------------
@@ -217,4 +219,5 @@ def make_shell_context():
 if __name__ == "__main__":
     init_db()
     manager.add_command("shell", Shell(make_context=make_shell_context))
+    manager.add_command("db", MigrateCommand)
     manager.run()
