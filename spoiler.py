@@ -22,7 +22,7 @@ from flask.ext.login import UserMixin
 from flask.ext.login import current_user, logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
-from flask.ext.script import Manager
+from flask.ext.script import Manager, Shell
 from wtforms import StringField, TextField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -211,6 +211,10 @@ def logout():
     flash("You have been successfully logged out!")
     return redirect(url_for("index"))
 
+def make_shell_context():
+    return dict(app=app, db=db, User=User, Post=Post)
+
 if __name__ == "__main__":
     init_db()
+    manager.add_command("shell", Shell(make_context=make_shell_context))
     manager.run()
