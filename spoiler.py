@@ -48,7 +48,7 @@ migrate = Migrate(app, db)
 def login_required(f):
     @wraps(f)
     def _wrapper(*args, **kwargs):
-        if current_user is None:
+        if current_user.is_anonymous:
             return redirect(url_for("login", next_url=request.path))
         return f(*args, **kwargs)
     return _wrapper
@@ -212,7 +212,7 @@ def login():
         if user is not None and user.verify_password(password):
             # Valid credentials supplied.
             login_user(user)
-            return redirect(url_for("submit"))
+            return redirect(request.args.get("next_url") or url_for("index"))
         else:
             # Invalid login credentials.
             flash("Invalid username or password supplied.")
