@@ -8,6 +8,7 @@ spoiler.py - the program entry point
 
 # System imports.
 import random
+from functools import wraps
 
 # Third party imports.
 from flask import Flask
@@ -17,7 +18,7 @@ from flask import render_template  # For html template rendering.
 from flask import request  # For obtaining POST information (?)
 from flask import url_for  # Gets the url for a given name
 from flask.ext.bootstrap import Bootstrap  # Pretty user interface
-from flask.ext.login import LoginManager, login_required, login_user
+from flask.ext.login import LoginManager, login_user
 from flask.ext.login import UserMixin
 from flask.ext.login import current_user, logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -39,6 +40,18 @@ login_manager.init_app(app)  # Create the login_manager
 bootstrap = Bootstrap(app)
 manager = Manager(app)
 migrate = Migrate(app, db)
+
+
+# -----------------------------------------------------------------------------
+# ----------------------------------DECORATORS---------------------------------
+# -----------------------------------------------------------------------------
+def login_required(f):
+    @wraps(f)
+    def _wrapper(*args, **kwargs):
+        if current_user is None:
+            return redirect(url_for("login", next_url=request.path))
+        return f(*args, **kwargs)
+    return _wrapper
 
 # --------------------------------------------------------------------------
 # ----------------------------------MODELS----------------------------------
