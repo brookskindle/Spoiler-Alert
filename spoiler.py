@@ -238,6 +238,8 @@ def login():
         if user is not None and user.verify_password(password):
             # Valid credentials supplied.
             login_user(user)
+            # TODO: Validate the "next" argument, lest I invite an open
+            # redirect security violation.
             return redirect(request.args.get("next") or url_for("index"))
         else:
             # Invalid login credentials.
