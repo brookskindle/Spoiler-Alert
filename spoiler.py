@@ -26,6 +26,7 @@ from flask.ext.wtf import Form
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from wtforms import StringField, TextField, PasswordField, SubmitField
+from wtforms import BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -151,6 +152,7 @@ class LoginForm(Form):
     """
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
+    remember = BooleanField("Remember Me")
     submit = SubmitField("Log In")
 
 
@@ -234,10 +236,11 @@ def login():
     if form.validate_on_submit():  # POST request with valid form data.
         username = form.username.data
         password = form.password.data
+        remember_me = form.remember.data
         user = User.query.filter_by(username=username).first()
         if user is not None and user.verify_password(password):
             # Valid credentials supplied.
-            login_user(user)
+            login_user(user, remember=remember_me)
             # TODO: Validate the "next" argument, lest I invite an open
             # redirect security violation.
             return redirect(request.args.get("next") or url_for("index"))
